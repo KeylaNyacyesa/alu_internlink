@@ -1,0 +1,136 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../models/enums.dart';
+import '../../widgets/common_widgets.dart';
+import '../../providers/providers.dart';
+import '../auth/login_screen.dart';
+
+class OnboardingScreen extends ConsumerWidget {
+  const OnboardingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
+    return Scaffold(
+      body: Stack(
+        children: [
+          const BackgroundCanvas(),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: size.height - 52),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF134E4A), Color(0xFF7DD3FC)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(Icons.school_rounded, color: Colors.white),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'ALU InternLink',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                              ),
+                              SizedBox(height: 4),
+                              Text('Student-to-startup internship marketplace'),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
+                      Text(
+                        'Find meaningful startup experiences inside the ALU ecosystem.',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Discover verified student-led ventures, apply with your skill portfolio, and keep track of every opportunity from one place.',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Colors.black.withOpacity(0.68),
+                            ),
+                      ),
+                      const SizedBox(height: 24),
+                      const OnboardingHighlights(),
+                      const SizedBox(height: 24),
+                      RoleCard(
+                        title: 'Continue as student',
+                        description:
+                            'Browse opportunities, bookmark roles, and manage your applications.',
+                        icon: Icons.person_rounded,
+                        accent: const Color(0xFF0F766E),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => LoginScreen(
+                                roleLabel: 'Student',
+                                onComplete: () async => await ref
+                                    .read(authControllerProvider.notifier)
+                                    .completeOnboarding(UserRole.student),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      RoleCard(
+                        title: 'Continue as startup',
+                        description:
+                            'Post opportunities, verify your venture, and review incoming interest.',
+                        icon: Icons.rocket_launch_rounded,
+                        accent: const Color(0xFFB45309),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => LoginScreen(
+                                roleLabel: 'Startup',
+                                onComplete: () async => await ref
+                                    .read(authControllerProvider.notifier)
+                                    .completeOnboarding(UserRole.startup),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 18),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF7ED),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFF5D0A9)),
+                        ),
+                        child: Text(
+                          'Firebase is wired in for authentication, Firestore persistence, and future real-time updates. The app still boots into a polished demo state if a backend call is unavailable, which keeps the UX stable during review.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: const Color(0xFF7C2D12),
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
