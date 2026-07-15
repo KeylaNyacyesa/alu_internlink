@@ -72,5 +72,3 @@ in the Firebase console, open **Firestore → `users/{uid}`** for that account a
 ```bash
 flutter analyze
 ```
-
-Runs clean (0 errors, 0 warnings; a handful of `withOpacity` deprecation infos remain).
