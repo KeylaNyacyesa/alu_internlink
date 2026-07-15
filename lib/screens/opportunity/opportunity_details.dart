@@ -83,7 +83,7 @@ class OpportunityDetailsPage extends ConsumerWidget {
                                       ],
                                     ),
                                   ),
-                                  if (opportunity.verifiedStartup) const Badge(label: 'Verified'),
+                                  if (opportunity.verifiedStartup) const AppBadge(label: 'Verified'),
                                 ],
                               ),
                               const SizedBox(height: 16),
@@ -328,7 +328,10 @@ class OpportunityCard extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const Spacer(),
+              // Fixed gap rather than Spacer: this card is used both in a
+              // bounded-height carousel (Home) and an unbounded sliver list
+              // (Discover) — Spacer requires bounded height and crashes there.
+              const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -350,7 +353,7 @@ class OpportunityCard extends ConsumerWidget {
                         ),
                   ),
                   const Spacer(),
-                  if (opportunity.verifiedStartup) const Badge(label: 'Verified'),
+                  if (opportunity.verifiedStartup) const AppBadge(label: 'Verified'),
                 ],
               ),
             ],
@@ -403,7 +406,7 @@ class ApplicationCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Badge(label: application.status.label),
+          AppBadge(label: application.status.label),
         ],
       ),
     );

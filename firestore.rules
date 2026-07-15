@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isStartup() {
+      return signedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Startup';
+    }
+
+    function isVerifiedStartup() {
+      return signedIn() && isStartup() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.verifiedStartup == true;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+
+    match /users/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn() && request.auth.uid == userId;
+      allow delete: if false;
+
+      match /bookmarks/{bookmarkId} {
+        allow read, write: if signedIn() && request.auth.uid == userId;
+      }
+    }
+
+    match /opportunities/{opportunityId} {
+      allow read: if true;
+      allow create, update, delete: if isVerifiedStartup();
+    }
+
+    match /startupVerificationRequests/{requestId} {
+      // Document id is the requesting user's uid, so ownership doubles as
+      // per-user access control until an admin-review workflow exists.
+      allow read, write: if isOwner(requestId);
+    }
+
+
+    match /applications/{applicationId} {
+      // A student may only create an application stamped with their own uid.
+      allow create: if signedIn() && request.resource.data.applicantId == request.auth.uid;
+
+      // Readable by the student who applied and by the startup that owns the
+      // opportunity (so it can review its inbound pipeline).
+      allow read: if isOwner(resource.data.applicantId)
+        || request.auth.uid == resource.data.startupOwnerId;
+
+      // The applicant can edit/withdraw their own application. The owning
+      // startup may transition the status but not reassign ownership.
+      allow update: if isOwner(resource.data.applicantId)
+        || (request.auth.uid == resource.data.startupOwnerId
+            && request.resource.data.applicantId == resource.data.applicantId
+            && request.resource.data.startupOwnerId == resource.data.startupOwnerId);
+
+      allow delete: if isOwner(resource.data.applicantId);
+    }
+
+
+  }
+}

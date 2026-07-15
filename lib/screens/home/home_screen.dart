@@ -5,6 +5,7 @@ import '../../models/enums.dart';
 import '../../models/seeds.dart';
 import '../../providers/providers.dart';
 import '../../widgets/common_widgets.dart';
+import '../opportunity/opportunity_form_screen.dart';
 import '../opportunity/opportunity_details.dart';
 
 class HomeTab extends ConsumerWidget {
@@ -69,11 +70,11 @@ class HomeTab extends ConsumerWidget {
               ),
               const SizedBox(height: 14),
               SizedBox(
-                height: 220,
+                height: 360,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: featured.isEmpty ? 1 : featured.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+separatorBuilder: (_, __) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
                     final opportunity = featured.isEmpty
                         ? seedOpportunities.first
@@ -101,34 +102,68 @@ class HomeTab extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text('Workflow snapshot', style: Theme.of(context).textTheme.titleMedium),
-                  const Spacer(),
-                  Text(
-                    role == UserRole.startup ? 'Startup mode' : 'Student mode',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: const Color(0xFF0F766E),
-                        ),
-                  ),
-                ],
+              Text(
+                role == UserRole.startup ? 'Startup control center' : 'Student next steps',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                role == UserRole.startup
+                    ? 'Verify your venture, publish roles, and manage applicants from one place.'
+                    : 'Search, bookmark, and apply to opportunities while tracking status in real time.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.black.withOpacity(0.68),
+                    ),
               ),
               const SizedBox(height: 12),
-              const WorkflowStep(
-                index: '1',
-                title: 'Verify identity',
-                body: 'ALU email, profile data, and startup review keep the platform trusted.',
-              ),
-              const WorkflowStep(
-                index: '2',
-                title: 'Match on skills',
-                body: 'Search, bookmark, and filter by discipline, location, and commitment.',
-              ),
-              const WorkflowStep(
-                index: '3',
-                title: 'Track progress',
-                body: 'Applications move through pending, shortlisted, interview, and accepted.',
-              ),
+              if (role == UserRole.startup)
+                FilledButton.icon(
+                  onPressed: authState.verifiedStartup
+                      ? () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const OpportunityFormScreen(),
+                            ),
+                          );
+                        }
+                      : null,
+                  icon: const Icon(Icons.add_circle_outline_rounded),
+                  label: Text(authState.verifiedStartup ? 'Post opportunity' : 'Request verification first'),
+                ),
+              if (role == UserRole.startup) const SizedBox(height: 12),
+              if (role == UserRole.startup) ...[
+                const WorkflowStep(
+                  index: '1',
+                  title: 'Request verification',
+                  body: 'Only ALU-recognized startups can publish visible opportunities.',
+                ),
+                const WorkflowStep(
+                  index: '2',
+                  title: 'Post opportunities',
+                  body: 'Create, edit, and remove roles as your hiring needs change.',
+                ),
+                const WorkflowStep(
+                  index: '3',
+                  title: 'Review applicants',
+                  body: 'Move students through applied, interview, and accepted states.',
+                ),
+              ] else ...[
+                const WorkflowStep(
+                  index: '1',
+                  title: 'Find roles',
+                  body: 'Discover verified opportunities with filters for role and commitment.',
+                ),
+                const WorkflowStep(
+                  index: '2',
+                  title: 'Save favorites',
+                  body: 'Bookmark opportunities you want to return to later.',
+                ),
+                const WorkflowStep(
+                  index: '3',
+                  title: 'Monitor progress',
+                  body: 'See status updates as your applications move in Firestore.',
+                ),
+              ],
             ],
           ),
         ),

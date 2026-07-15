@@ -16,9 +16,12 @@ class Opportunity {
     required this.verifiedStartup,
     required this.applicantCount,
     required this.gradient,
+    this.ownerId = '',
   });
 
   final String id;
+  /// uid of the startup account that owns this posting. Empty for local seed data.
+  final String ownerId;
   final String title;
   final String startupName;
   final String summary;
@@ -37,6 +40,7 @@ class Opportunity {
   factory Opportunity.fromMap(Map<String, dynamic> data, String id) {
     return Opportunity(
       id: id,
+      ownerId: data['ownerId'] as String? ?? '',
       title: data['title'] as String? ?? 'Untitled opportunity',
       startupName: data['startupName'] as String? ?? 'ALU Startup',
       summary: data['summary'] as String? ?? 'Opportunity details are available in Firestore.',
@@ -55,6 +59,7 @@ class Opportunity {
   }
 
   Map<String, dynamic> toMap() => {
+        'ownerId': ownerId,
         'title': title,
         'startupName': startupName,
         'summary': summary,

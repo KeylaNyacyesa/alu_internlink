@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/enums.dart';
 import '../../widgets/common_widgets.dart';
 import '../../providers/providers.dart';
-import '../auth/login_screen.dart';
+import '../auth/startup_login_screen.dart';
+import '../auth/student_login_screen.dart';
 
 class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
@@ -78,11 +78,25 @@ class OnboardingScreen extends ConsumerWidget {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
-                              builder: (_) => LoginScreen(
-                                roleLabel: 'Student',
-                                onComplete: () async => await ref
-                                    .read(authControllerProvider.notifier)
-                                    .completeOnboarding(UserRole.student),
+                              builder: (_) => StudentLoginScreen(
+                                onLogin: (email, password, _) async =>
+                                    ref
+                                        .read(authControllerProvider.notifier)
+                                        .loginWithEmailAndPassword(
+                                          roleLabel: 'Student',
+                                          displayName: '',
+                                          email: email,
+                                          password: password,
+                                        ),
+                                onRegister: (email, password, displayName) async =>
+                                    ref
+                                        .read(authControllerProvider.notifier)
+                                        .registerWithEmailAndPassword(
+                                          roleLabel: 'Student',
+                                          displayName: displayName,
+                                          email: email,
+                                          password: password,
+                                        ),
                               ),
                             ),
                           );
@@ -95,34 +109,35 @@ class OnboardingScreen extends ConsumerWidget {
                             'Post opportunities, verify your venture, and review incoming interest.',
                         icon: Icons.rocket_launch_rounded,
                         accent: const Color(0xFFB45309),
-                        onTap: () {
+                    onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
-                              builder: (_) => LoginScreen(
-                                roleLabel: 'Startup',
-                                onComplete: () async => await ref
-                                    .read(authControllerProvider.notifier)
-                                    .completeOnboarding(UserRole.startup),
+                              builder: (_) => StartupLoginScreen(
+                                onLogin: (email, password, _) async =>
+                                    ref
+                                        .read(authControllerProvider.notifier)
+                                        .loginWithEmailAndPassword(
+                                          roleLabel: 'Startup',
+                                          displayName: '',
+                                          email: email,
+                                          password: password,
+                                        ),
+                                onRegister: (email, password, displayName) async =>
+                                    ref
+                                        .read(authControllerProvider.notifier)
+                                        .registerWithEmailAndPassword(
+                                          roleLabel: 'Startup',
+                                          displayName: displayName,
+                                          email: email,
+                                          password: password,
+                                        ),
                               ),
                             ),
                           );
                         },
                       ),
                       const SizedBox(height: 18),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF7ED),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFFF5D0A9)),
-                        ),
-                        child: Text(
-                          'Firebase is wired in for authentication, Firestore persistence, and future real-time updates. The app still boots into a polished demo state if a backend call is unavailable, which keeps the UX stable during review.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: const Color(0xFF7C2D12),
-                              ),
-                        ),
-                      ),
+                      const SizedBox(height: 18),
                     ],
                   ),
                 ),

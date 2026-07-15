@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'firebase_options.dart';
-import 'screens/applications/applications_screen.dart';
-import 'screens/discover/discover_screen.dart';
+import 'screens/applications/student_applications_screen.dart';
+import 'screens/applications/startup_applications_screen.dart';
+import 'screens/discover/student_discover_screen.dart';
+import 'screens/discover/startup_discover_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
-import 'screens/profile/profile_screen.dart';
+import 'screens/profile/student_profile_screen.dart';
+import 'screens/profile/startup_profile_screen.dart';
+
 import 'models/enums.dart';
 import 'providers/providers.dart';
 import 'widgets/common_widgets.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -114,12 +119,21 @@ class MarketplaceShell extends ConsumerWidget {
     final index = ref.watch(selectedTabProvider);
     final authState = ref.watch(authControllerProvider);
 
+    final role = authState.role ?? UserRole.student;
+
     final pages = <Widget>[
-      HomeTab(role: authState.role ?? UserRole.student),
-      const DiscoverTab(),
-      const ApplicationsTab(),
-      const ProfileTab(),
+      HomeTab(role: role),
+      role == UserRole.startup
+          ? const StartupDiscoverScreen()
+          : const StudentDiscoverScreen(),
+      role == UserRole.startup
+          ? const StartupApplicationsScreen()
+          : const StudentApplicationsScreen(),
+      role == UserRole.startup
+          ? const StartupProfileScreen()
+          : const StudentProfileScreen(),
     ];
+
 
     return Scaffold(
       body: Stack(

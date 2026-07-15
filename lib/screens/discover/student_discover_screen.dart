@@ -1,18 +1,49 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/providers.dart';
 import '../../models/enums.dart';
+import '../../models/seeds.dart';
+import '../../providers/providers.dart';
+import '../../widgets/common_widgets.dart';
 import '../opportunity/opportunity_details.dart';
 
-class DiscoverTab extends ConsumerWidget {
-  const DiscoverTab({super.key});
+class StudentDiscoverScreen extends ConsumerWidget {
+  const StudentDiscoverScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(marketplaceControllerProvider);
     final controller = ref.read(marketplaceControllerProvider.notifier);
     final opportunities = state.filteredOpportunities;
+
+    if (state.opportunities.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: SurfaceCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Discover opportunities', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                const SizedBox(height: 8),
+                Text(
+                  'Browse verified startup roles. Seed demo opportunities appear while Firestore hydrates.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: controller.clearFilters,
+                  child: const Text('Reset filters'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return CustomScrollView(
       slivers: [
@@ -25,7 +56,7 @@ class DiscoverTab extends ConsumerWidget {
                 Text('Discover opportunities', style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 8),
                 Text(
-                  'Search by role, startup type, commitment, or ALU verification status.',
+                  'Search by role, commitment, or mode. Bookmarks and applications update in real time.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.black.withOpacity(0.65),
                       ),
@@ -84,7 +115,10 @@ class DiscoverTab extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
           sliver: SliverList.separated(
             itemBuilder: (context, index) {
-              final opportunity = opportunities[index];
+              final opportunity = opportunities.isEmpty
+                  ? seedOpportunities[index % seedOpportunities.length]
+                  : opportunities[index];
+
               return OpportunityCard(
                 opportunity: opportunity,
                 onTap: () => Navigator.of(context).push(
@@ -94,11 +128,12 @@ class DiscoverTab extends ConsumerWidget {
                 ),
               );
             },
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemCount: opportunities.length,
+separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemCount: opportunities.isEmpty ? seedOpportunities.length : opportunities.length,
           ),
         ),
       ],
     );
   }
 }
+

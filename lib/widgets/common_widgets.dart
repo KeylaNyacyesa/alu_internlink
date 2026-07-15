@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+
 import '../models/enums.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({required this.role, required this.name, super.key});
+  const HomeHeader({
+    required this.role,
+    required this.name,
+    super.key,
+  });
 
   final UserRole role;
   final String name;
@@ -19,7 +24,10 @@ class HomeHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Hello, $name', style: Theme.of(context).textTheme.headlineSmall),
+                    Text(
+                      'Hello, $name',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                     const SizedBox(height: 6),
                     Text(
                       role == UserRole.startup
@@ -79,7 +87,6 @@ class OnboardingHighlights extends StatelessWidget {
     final items = [
       ('Verified startups', 'Only ALU-recognized ventures can request visibility.'),
       ('Fast matching', 'Search, bookmark, and apply from a single flow.'),
-      ('Scalable state', 'Riverpod keeps workflows predictable across screens.'),
     ];
 
     return Column(
@@ -108,7 +115,10 @@ class OnboardingHighlights extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.$1, style: Theme.of(context).textTheme.titleSmall),
+                      Text(
+                        item.$1,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                       const SizedBox(height: 4),
                       Text(item.$2),
                     ],
@@ -311,7 +321,12 @@ class Blob extends StatelessWidget {
 }
 
 class WorkflowStep extends StatelessWidget {
-  const WorkflowStep({required this.index, required this.title, required this.body, super.key});
+  const WorkflowStep({
+    required this.index,
+    required this.title,
+    required this.body,
+    super.key,
+  });
 
   final String index;
   final String title;
@@ -402,8 +417,8 @@ class StatMiniCard extends StatelessWidget {
   }
 }
 
-class Badge extends StatelessWidget {
-  const Badge({required this.label, super.key});
+class AppBadge extends StatelessWidget {
+  const AppBadge({required this.label, super.key});
 
   final String label;
 
@@ -448,3 +463,4 @@ class Pill extends StatelessWidget {
     );
   }
 }
+
